@@ -66,12 +66,22 @@ function showView(viewName) {
 }
 
 async function loadRecentStudySets() {
-	try {
-		const response = await fetch('/api/study-sets');
-		if (!response.ok) throw new Error('Could not load saved study sets.');
-		renderRecentStudySets(await response.json());
-	} catch (error) {
-		console.warn(error.message);
+	const recentSets = document.querySelector('#recentSets');
+	for (let attempt = 0; attempt < 3; attempt += 1) {
+		try {
+			const response = await fetch(`/api/study-sets?attempt=${attempt}`, { cache: 'no-store' });
+			if (!response.ok) throw new Error('Could not load saved study sets.');
+			renderRecentStudySets(await response.json());
+			return;
+		} catch (error) {
+			if (attempt === 2) {
+				recentSets.className = 'empty-recent';
+				recentSets.innerHTML = '<div class="empty-icon">!</div><p>Saved studies could not be loaded.</p><small>Refresh the page to try again.</small>';
+				console.warn(error.message);
+			} else {
+				await new Promise((resolve) => setTimeout(resolve, 500));
+			}
+		}
 	}
 }
 
