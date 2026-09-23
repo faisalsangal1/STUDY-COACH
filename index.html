@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Study Coach turns your notes into adaptive practice.">
+	<title>Study Coach | Learn with momentum</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<div class="app-shell">
+		<aside class="sidebar">
+			<div class="brand"><span class="brand-mark">+</span><span>Study Coach</span></div>
+			<div class="sidebar-label">Your workspace</div>
+			<nav class="nav-list" aria-label="Main navigation">
+				<button class="nav-item active" data-view="overview"><span class="nav-icon">◈</span>Overview</button>
+				<button class="nav-item" data-view="flashcards"><span class="nav-icon">▣</span>Flashcards</button>
+				<button class="nav-item" data-view="practice"><span class="nav-icon">✓</span>Practice</button>
+			</nav>
+			<div class="sidebar-bottom">
+				<div class="streak-card"><span class="streak-dot"></span><div><strong id="streakValue">0 day streak</strong><small>Start a study session</small></div></div>
+				<div class="profile"><div class="avatar">SC</div><div><strong>Student</strong><small>Keep going</small></div><span class="more">•••</span></div>
+			</div>
+		</aside>
+
+		<main class="main-content">
+			<header class="topbar">
+				<div><p class="eyebrow">TUESDAY, SEPTEMBER 23</p><h1>Good morning, learner.</h1></div>
+				<button class="icon-button" id="newSetButton" title="Create a new study set">＋ <span>New study set</span></button>
+			</header>
+
+			<section class="view active" id="overviewView">
+				<div class="hero-grid">
+					<section class="welcome-panel">
+						<div class="welcome-copy"><span class="sun-label">YOUR NEXT SESSION</span><h2>Turn a little time<br><em>into real progress.</em></h2><p>Bring your notes. We’ll find what matters and build the practice you need next.</p></div>
+						<div class="orbit-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="orbit-core">✦</div><span class="orbit-dot dot-one"></span><span class="orbit-dot dot-two"></span></div>
+					</section>
+					<section class="progress-panel"><div class="section-heading"><div><span class="sun-label">THIS WEEK</span><h3>Your learning rhythm</h3></div><span class="trend">↑ 12%</span></div><div class="progress-number">0 <span>sessions</span></div><div class="week-bars"><span style="height:18%"><i>M</i></span><span style="height:35%"><i>T</i></span><span style="height:22%"><i>W</i></span><span style="height:56%"><i>T</i></span><span class="today" style="height:78%"><i>F</i></span><span style="height:42%"><i>S</i></span><span style="height:28%"><i>S</i></span></div></section>
+				</div>
+
+				<section class="create-section" id="createSection">
+					<div class="section-heading create-heading"><div><span class="sun-label">START HERE</span><h2>What are you learning?</h2></div><span class="step-count">01 <span>/ 02</span></span></div>
+					<form id="materialForm">
+						<label class="material-box" for="materialInput"><textarea id="materialInput" name="material" placeholder="Paste your notes, a chapter, or anything you want to understand better..."></textarea><span class="character-count" id="characterCount">0 characters</span></label>
+						<div class="upload-row"><label class="file-drop" for="fileInput"><span class="upload-icon">↥</span><span><strong>Attach a file</strong><small>PDF, JPG, PNG, or WEBP · 10MB max</small></span><input id="fileInput" name="file" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp"></label><span class="or-label">or</span><span class="paste-hint">Paste text above <span>↗</span></span><button class="primary-button" type="submit" id="analyzeButton"><span>Build my study set</span><span class="button-arrow">→</span></button></div>
+						<div class="selected-file" id="selectedFile" hidden></div><p class="form-error" id="formError" role="alert"></p>
+					</form>
+				</section>
+
+				<section class="recent-section"><div class="section-heading"><div><span class="sun-label">RECENT STUDY SETS</span><h2>Pick up where you left off</h2></div><button class="text-button" id="viewAllButton">View all <span>→</span></button></div><div class="empty-recent" id="recentSets"><div class="empty-icon">✦</div><p>Your first study set will live here.</p><small>It only takes a few notes to get started.</small></div></section>
+			</section>
+
+			<section class="view" id="flashcardsView"><div class="study-header"><div><span class="sun-label">FLASHCARDS</span><h2 id="flashcardTitle">Your study set</h2></div><button class="subtle-button" data-view-target="overview">← Back to overview</button></div><div id="flashcardContent" class="content-placeholder"><div class="empty-icon">▣</div><h3>No flashcards yet</h3><p>Analyze some material to create your first deck.</p></div></section>
+			<section class="view" id="practiceView"><div class="study-header"><div><span class="sun-label">PRACTICE</span><h2>Test your understanding</h2></div><button class="subtle-button" data-view-target="overview">← Back to overview</button></div><div id="practiceContent" class="content-placeholder"><div class="empty-icon">✓</div><h3>No practice questions yet</h3><p>Your personalized questions will appear here.</p></div></section>
+		</main>
+	</div>
+	<div class="toast" id="toast" role="status"></div>
+	<script src="script.js"></script>
+</body>
+</html>

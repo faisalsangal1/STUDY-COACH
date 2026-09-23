@@ -1,0 +1,4 @@
+{
+  "watch": ["server.js", "db.js", "script.js", "style.css", "index.html"],
+  "ignore": ["study-coach.sqlite", "study-coach.sqlite-*", "node_modules"]
+}
