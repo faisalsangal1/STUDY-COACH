@@ -23,24 +23,24 @@ app.get('/api/health', (_request, response) => {
   });
 });
 
-app.get('/api/study-sets', (_request, response) => {
-  response.json(getRecentStudySets());
+app.get('/api/study-sets', async (_request, response) => {
+  response.json(await getRecentStudySets());
 });
 
-app.get('/api/study-sets/:id', (request, response) => {
-  const studySet = getStudySet(request.params.id);
+app.get('/api/study-sets/:id', async (request, response) => {
+  const studySet = await getStudySet(request.params.id);
   if (!studySet) return response.status(404).json({ error: 'Study set not found.' });
   return response.json(studySet);
 });
 
-app.delete('/api/study-sets/:id', (request, response) => {
-  if (!deleteStudySet(request.params.id)) return response.status(404).json({ error: 'Study set not found.' });
+app.delete('/api/study-sets/:id', async (request, response) => {
+  if (!await deleteStudySet(request.params.id)) return response.status(404).json({ error: 'Study set not found.' });
   return response.status(204).end();
 });
 
 app.post('/api/evaluate-all', async (request, response) => {
   const { studySetId, answers } = request.body;
-  const studySet = studySetId ? getStudySet(studySetId) : null;
+  const studySet = studySetId ? await getStudySet(studySetId) : null;
   if (!studySet) return response.status(404).json({ error: 'Study set not found.' });
   if (!Array.isArray(answers) || answers.length !== studySet.questions.length || answers.some((item) => !String(item.studentAnswer || '').trim())) {
     return response.status(400).json({ error: 'Answer every question before submitting.' });
@@ -72,12 +72,12 @@ ${JSON.stringify(answerRows)}` }] }],
       config: { responseMimeType: 'application/json', temperature: 0.2 },
     });
     const payload = JSON.parse(result.text.trim());
-    return saveBatchEvaluation(response, studySet, answerRows, payload);
+    return await saveBatchEvaluation(response, studySet, answerRows, payload);
   } catch (error) {
     console.error('Batch answer evaluation failed:', error.message);
     const evaluations = answerRows.map((row) => ({ questionId: row.questionId, ...createFallbackEvaluation(row.expectedAnswer, row.studentAnswer, row.question) }));
     const overview = createFallbackOverview(studySet, evaluations);
-    return saveBatchEvaluation(response, studySet, answerRows, { evaluations, overview, usedFallback: true });
+    return await saveBatchEvaluation(response, studySet, answerRows, { evaluations, overview, usedFallback: true });
   }
 });
 
@@ -139,7 +139,7 @@ ${material ? `Pasted material:\n${material}` : 'The attached file is the study m
     }
 
     const studySet = JSON.parse(text);
-    const id = saveStudySet(studySet, file?.originalname || 'Pasted material');
+    const id = await saveStudySet(studySet, file?.originalname || 'Pasted material');
     return response.json({ ...studySet, id });
   } catch (error) {
     console.error('Study material analysis failed:', error.message);
@@ -149,7 +149,7 @@ ${material ? `Pasted material:\n${material}` : 'The attached file is the study m
 
 app.post('/api/evaluate', async (request, response) => {
   const { studySetId, questionId, question: submittedQuestion, expectedAnswer: submittedAnswer, studentAnswer } = request.body;
-  const savedStudySet = studySetId ? getStudySet(studySetId) : null;
+  const savedStudySet = studySetId ? await getStudySet(studySetId) : null;
   const savedQuestion = savedStudySet?.questions.find((item) => Number(item.id) === Number(questionId));
   const question = savedQuestion?.question || submittedQuestion;
   const expectedAnswer = savedQuestion?.answer || submittedAnswer;
@@ -175,12 +175,12 @@ Judge meaning, not word-for-word similarity. Accept concise answers, synonyms, a
     });
 
     const evaluation = normalizeEvaluation(JSON.parse(result.text.trim()));
-    if (studySetId && questionId) saveEvaluation(studySetId, questionId, evaluation, studentAnswer.trim());
+    if (studySetId && questionId) await saveEvaluation(studySetId, questionId, evaluation, studentAnswer.trim());
     return response.json(evaluation);
   } catch (error) {
     console.error('Answer evaluation failed:', error.message);
     const fallback = createFallbackEvaluation(expectedAnswer, studentAnswer, question);
-    if (studySetId && questionId) saveEvaluation(studySetId, questionId, fallback, studentAnswer.trim());
+    if (studySetId && questionId) await saveEvaluation(studySetId, questionId, fallback, studentAnswer.trim());
     return response.json({ ...fallback, usedFallback: true });
   }
 });
@@ -237,10 +237,10 @@ function createFallbackOverview(studySet, evaluations) {
   };
 }
 
-function saveBatchEvaluation(response, studySet, answerRows, payload) {
+async function saveBatchEvaluation(response, studySet, answerRows, payload) {
   const evaluationMap = new Map((payload.evaluations || []).map((evaluation) => [Number(evaluation.questionId), normalizeEvaluation(evaluation)]));
   const evaluations = answerRows.map((row) => ({ questionId: row.questionId, ...(evaluationMap.get(Number(row.questionId)) || createFallbackEvaluation(row.expectedAnswer, row.studentAnswer, row.question)) }));
-  evaluations.forEach((evaluation, index) => saveEvaluation(studySet.id, evaluation.questionId, evaluation, answerRows[index].studentAnswer));
+  await Promise.all(evaluations.map((evaluation, index) => saveEvaluation(studySet.id, evaluation.questionId, evaluation, answerRows[index].studentAnswer)));
   const correctCount = evaluations.filter((evaluation) => evaluation.correct).length;
   const overview = { ...(payload.overview || createFallbackOverview(studySet, evaluations)), correctCount, totalQuestions: evaluations.length };
   return response.json({ evaluations, overview, usedFallback: Boolean(payload.usedFallback) });
