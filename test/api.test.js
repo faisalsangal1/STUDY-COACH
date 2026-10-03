@@ -14,10 +14,11 @@ const database = require('../db');
 let server;
 let baseUrl;
 let fetchMode = 'success';
+let expectedApiKey = 'test-key-not-real';
 
 function mockGroqFetch(url, options) {
 	assert.equal(url, 'https://api.groq.com/openai/v1/chat/completions');
-	assert.equal(options.headers.Authorization, 'Bearer test-key-not-real');
+	assert.equal(options.headers.Authorization, `Bearer ${expectedApiKey}`);
 	const request = JSON.parse(options.body);
 	assert.equal(request.model, 'openai/gpt-oss-120b');
 	const prompt = request.messages[0].content;
@@ -25,11 +26,12 @@ function mockGroqFetch(url, options) {
 
 	if (fetchMode === 'failure') {
 		return Promise.resolve(new Response(JSON.stringify({ error: { message: 'provider failure' } }), { status: 503 }));
-	}
-	if (fetchMode === 'malformed') {
+	} else if (fetchMode === 'malformed') {
 		return Promise.resolve(new Response(JSON.stringify({ choices: [{ message: { content: 'not valid JSON' } }] }), { status: 200 }));
 	}
-	if (prompt.startsWith('Create accurate, student-friendly revision notes')) {
+	if (prompt === 'Respond with exactly: Study Coach AI connection successful') {
+		content = 'Study Coach AI connection successful';
+	} else if (prompt.startsWith('Create accurate, student-friendly revision notes')) {
 		content = prompt.includes('Title: Overview only')
 			? JSON.stringify({ title: 'Overview only', summary: 'A concise but useful overview.' })
 			: JSON.stringify({
@@ -82,12 +84,12 @@ function mockGroqFetch(url, options) {
 	}));
 }
 
-function request(route, { method = 'GET', body } = {}) {
+function request(route, { method = 'GET', body, headers = {} } = {}) {
 	return new Promise((resolve, reject) => {
 		const requestBody = body === undefined ? null : JSON.stringify(body);
 		const request = http.request(`${baseUrl}${route}`, {
 			method,
-			headers: requestBody ? { 'Content-Type': 'application/json' } : {}
+			headers: { ...(requestBody ? { 'Content-Type': 'application/json' } : {}), ...headers }
 		}, response => {
 			let responseBody = '';
 			response.setEncoding('utf8');
@@ -124,6 +126,12 @@ test('Study Coach core API workflows', async () => {
 	const health = await request('/api/health');
 	assert.equal(health.status, 200);
 	assert.deepEqual(health.body, { ok: true });
+
+	expectedApiKey = 'browser-test-key';
+	const aiTest = await request('/api/test-ai', { headers: { 'X-Groq-API-Key': expectedApiKey } });
+	assert.equal(aiTest.status, 200);
+	assert.deepEqual(aiTest.body, { ok: true, response: 'Study Coach AI connection successful' });
+	expectedApiKey = 'test-key-not-real';
 
 	const invalidSubject = await request('/api/subjects', { method: 'POST', body: {} });
 	assert.equal(invalidSubject.status, 400);

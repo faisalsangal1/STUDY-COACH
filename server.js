@@ -19,12 +19,12 @@ app.get('/api/health', (req, res) => {
 
 app.get('/api/test-ai', async (req, res) => {
   try {
-    const response = await generateAI('Respond with exactly: Study Coach AI connection successful');
+    const response = await generateAI('Respond with exactly: Study Coach AI connection successful', req.get('x-groq-api-key'));
     res.json({ ok: true, response });
   } catch {
     res.status(500).json({
       ok: false,
-      error: 'AI request failed. Check the server configuration and try again.'
+      error: 'AI request failed. Check your Groq API key and connection, then try again.'
     });
   }
 });

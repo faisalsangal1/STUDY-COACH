@@ -8,6 +8,7 @@ const state = {
 	flashcards: { cards: [], index: 0, flipped: false },
 	questions: { items: [], answers: {}, submitted: false, results: [] },
 	exams: [],
+	groqApiKey: localStorage.getItem('oryn.groqApiKey') || '',
 	activeExam: null,
 	examResult: null,
 	examTimer: null,
@@ -23,6 +24,7 @@ const viewNames = {
 	notes: 'NOTES',
 	flashcards: 'FLASHCARDS',
 	practice: 'PRACTICE',
+	'api-settings': 'API KEY',
 	mistakes: 'MISTAKE BANK',
 	exams: 'EXAM SIMULATOR',
 	revision: 'REVISION PLANNER'
@@ -42,10 +44,13 @@ function escapeHtml(value) {
 }
 
 async function api(path, options = {}) {
+	const usesAI = path === '/test-ai'
+		|| /^\/(notes\/generate|flashcards\/generate|questions\/(generate|submit|[^/]+\/answer)|exams\/(generate|[^/]+\/submit))$/.test(path);
 	const response = await fetch(`/api${path}`, {
 		...options,
 		headers: {
 			...(options.body ? { 'Content-Type': 'application/json' } : {}),
+			...(usesAI && state.groqApiKey ? { 'X-Groq-API-Key': state.groqApiKey } : {}),
 			...options.headers
 		}
 	});
@@ -975,6 +980,39 @@ $('#notes-form').addEventListener('submit', handleNotesSubmit);
 $('#flashcard-form').addEventListener('submit', handleFlashcardSubmit);
 $('#practice-form').addEventListener('submit', handlePracticeSubmit);
 $('#exam-form').addEventListener('submit', handleExamSubmit);
+$('#api-key-form').addEventListener('submit', event => {
+	event.preventDefault();
+	const key = $('#groq-api-key').value.trim();
+	if (!key) {
+		showToast('Enter your Groq API key first.');
+		return;
+	}
+	localStorage.setItem('oryn.groqApiKey', key);
+	state.groqApiKey = key;
+	$('#groq-api-key').value = '';
+	updateApiKeyStatus('Your Groq API key is saved in this browser.', 'success');
+	showToast('Groq API key saved in this browser.');
+});
+$('#test-api-key').addEventListener('click', async event => {
+	const button = event.currentTarget;
+	button.disabled = true;
+	try {
+		if (!state.groqApiKey) throw new Error('Save your Groq API key in this browser first.');
+		const result = await api('/test-ai');
+		updateApiKeyStatus(result.response || 'Groq connection successful.', 'success');
+	} catch (error) {
+		updateApiKeyStatus(error.message, 'error');
+	} finally {
+		button.disabled = false;
+	}
+});
+$('#remove-api-key').addEventListener('click', () => {
+	localStorage.removeItem('oryn.groqApiKey');
+	state.groqApiKey = '';
+	$('#groq-api-key').value = '';
+	updateApiKeyStatus('No browser key saved. The server may still use its own configured key.', '');
+	showToast('Browser API key removed.');
+});
 $('#generate-revision').addEventListener('click', generateRevisionPlan);
 $('#back-navigation').addEventListener('click', navigateBack);
 $('#home-navigation').addEventListener('click', () => {
@@ -1001,6 +1039,18 @@ $('#reset-workspace').addEventListener('click', async event => {
 	}
 });
 $('#revision-syllabus-file').addEventListener('change', handleRevisionSyllabusUpload);
+function updateApiKeyStatus(message, status) {
+	const element = $('#api-key-status');
+	element.textContent = message;
+	element.dataset.status = status;
+}
+
+updateApiKeyStatus(
+	state.groqApiKey
+		? 'A Groq API key is saved in this browser.'
+		: 'No browser key saved. The server may still use its own configured key.',
+	state.groqApiKey ? 'success' : ''
+);
 $('#revision-select-all-notes').addEventListener('change', event => {
 	$$('input[name="revision-note"]').forEach(input => { input.checked = event.currentTarget.checked; });
 });

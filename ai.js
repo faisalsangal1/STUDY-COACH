@@ -1,8 +1,8 @@
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const MODEL = 'openai/gpt-oss-120b';
 
-async function generateAI(prompt) {
-	const apiKey = process.env.GROQ_API_KEY;
+async function generateAI(prompt, requestApiKey) {
+	const apiKey = requestApiKey || process.env.GROQ_API_KEY;
 
 	if (!apiKey) {
 		throw new Error('GROQ_API_KEY is not set. Add it to the server environment before calling generateAI.');

@@ -63,7 +63,7 @@ You can also use GitHub's **Code → Download ZIP** option and extract the archi
    npm install
    ```
 
-2. Create a file named `.env` in the project root and add your own Groq API key:
+2. To use AI features, either enter your Groq API key in the app's **API key** page after it starts, or create a `.env` file in the project root:
 
    ```dotenv
    GROQ_API_KEY=your_groq_api_key
@@ -71,6 +71,8 @@ You can also use GitHub's **Code → Download ZIP** option and extract the archi
    ```
 
    Get an API key from Groq and replace `your_groq_api_key` with that key. Keep `.env` private: it is excluded from Git, and you should never commit or share your real API key. `PORT` is optional and defaults to `3000`. You can also optionally set `DATABASE_PATH` to choose a database file path (relative to the project folder or an absolute path); otherwise the app uses `data/study-coach.sqlite`.
+
+   Alternatively, start the app and open **API key** in the sidebar. A key entered there is saved in that browser's local storage, not in the source code or SQLite database. The browser sends it to the app server only for AI requests; the server forwards it to Groq. Anyone with access to that browser profile may be able to use the saved key, so remove it on shared devices. If you deploy the app, use HTTPS and only enter a key on a server you trust. Groq usage may be subject to its own pricing and limits.
 
 3. Start the app in development mode:
 
@@ -86,7 +88,7 @@ You can also use GitHub's **Code → Download ZIP** option and extract the archi
 
 4. Open the local URL printed in the terminal, normally <http://127.0.0.1:3000>. If that port is busy, the server tries the following ports and prints the URL it uses.
 
-The app can start without `GROQ_API_KEY`, but AI-powered generation and short-answer evaluation will not work. To check the AI connection, open `http://127.0.0.1:3000/api/test-ai` using the actual port printed by the server. The basic health endpoint is `/api/health`.
+The app can start without `GROQ_API_KEY`; add a key in the sidebar to enable AI-powered generation and short-answer evaluation. To check a server-configured AI connection, open `http://127.0.0.1:3000/api/test-ai` using the actual port printed by the server. Use **Test connection** on the API key page to test a browser-saved key. The basic health endpoint is `/api/health`.
 
 ## Run Tests
 
