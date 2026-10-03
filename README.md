@@ -1,107 +1,187 @@
 # Oryn AI Study Coach
 
-Oryn AI is a personal study workspace that turns study material and syllabus topics into structured learning tools. It keeps practice results, mistakes, and revision work together so students can see what to study next.
+Oryn AI is a personal study workspace for organizing syllabus topics, turning study material into learning tools, practicing, and planning revision. Subjects, generated content, results, and revision tasks are stored in a local SQLite database.
 
-## Core Features
+## Features
 
-- Organize subjects and syllabus topics, and track topic completion and practice accuracy.
-- Generate revision notes, flashcards, practice questions, and timed exams from pasted study material, saved materials, or selected topics.
-- Practice questions and exams, get feedback, and review saved attempts and unresolved mistakes.
-- Grade multiple-choice answers directly in the app and use AI to assess short answers.
-- View progress on a dashboard and create revision plans based on saved materials and performance.
-- Paste class notes or passages into the study tools. The revision planner also accepts syllabus files in text or Markdown format.
+- Organize subjects and topics, and track topic completion and practice accuracy.
+- Generate revision notes, flashcards, practice questions, and timed exams from pasted material, saved notes, or syllabus topics.
+- Practice questions and exams; multiple-choice answers are graded locally and AI evaluates short answers.
+- Review feedback and saved mistakes, view progress on a dashboard, and create revision plans.
+- Add an optional Groq API key in the app, or configure one on the server.
 
-## How the App Works
+Oryn AI is a study workflow, not a general-purpose chatbot. A conversational chatbot and a curriculum-specific AKUEB experience are in development; current previews do not provide live chat or syllabus-aligned AKUEB tools.
 
-The browser interface is built with HTML, CSS, and JavaScript and is served by the Node.js/Express server. The browser sends requests to the server's JSON API. The server handles study workflows, calls the AI service for supported tasks, and saves subjects, study materials, generated content, attempts, and revision data to a local SQLite database.
+## How It Works
 
-By default, the database is created at `data/study-coach.sqlite` on the machine running the app. It is not a shared online database. This is a local, single-workspace app: it has no account system, and anyone who can access a running instance can use that workspace.
+The browser interface uses HTML, CSS, and JavaScript and is served by a Node.js/Express server. The browser calls the server's JSON API, and the server stores workspace data in SQLite and calls Groq for AI-backed features.
 
-## How AI Is Used
+By default, the database is `data/study-coach.sqlite` on the machine running the app. This is a local, single-workspace app with no accounts or access controls. When started normally, the server listens on `127.0.0.1` and tries subsequent ports if the configured port is busy.
 
-For AI-powered study tasks, the server sends focused prompts to Groq's OpenAI-compatible chat-completions API using the `openai/gpt-oss-120b` model. The API key stays on the server and is not sent to the browser.
+## AI and API Keys
 
-AI helps generate structured revision notes, flashcards, practice questions, and exams from the material or topics provided. The app requests structured JSON, validates the response, and saves valid results to the local workspace. AI also evaluates short answers and provides feedback. Multiple-choice grading and performance-based revision prioritization are handled by the app itself.
+The AI provider is Groq's OpenAI-compatible chat-completions API, using the `openai/gpt-oss-120b` model. AI features include generating notes, flashcards, practice questions, and exams, and evaluating short answers. Multiple-choice grading and revision prioritization are handled by the app.
 
-Oryn AI is designed around a study loop—prepare material, practice, review feedback and mistakes, then plan what to revisit—not as a general-purpose chatbot.
+You can configure a key in either of these ways:
 
-## In Progress
+1. **In the app:** open **API key** in the sidebar, enter your Groq key, and choose **Save key in this browser**. The key is stored in that browser's local storage, not in the app's source code or SQLite database. The browser sends it in the `X-Groq-API-Key` request header for AI-backed API calls; the server forwards it to Groq. Use **Test connection** to check it, or **Remove key** to delete it from that browser.
+2. **On the server:** set `GROQ_API_KEY` in the server environment or in a root `.env` file. The server uses this key when a request does not provide a browser key.
 
-A conversational chatbot and a curriculum-specific AKUEB experience are in development. Their current front-end previews do not provide chat responses or live syllabus-aligned AKUEB study tools. The study generation and grading features described above are available separately.
+An `X-Groq-API-Key` request header takes precedence over the server-configured key for that request. The app does not save browser keys in SQLite. Anyone with access to the browser profile may be able to use a key saved there. Only enter a key when you trust the server receiving it; use HTTPS if you deploy the app beyond your own machine. Groq usage is subject to Groq's terms, pricing, and limits. Never commit or share a real API key.
 
-## Technology
-
-- **Frontend:** Vanilla HTML, CSS, and JavaScript.
-- **Backend:** Node.js and Express, with a JSON REST API.
-- **Data:** SQLite via `better-sqlite3`.
-- **AI:** Groq API, called server-side.
-- **Tests:** Node's built-in test runner; AI requests are mocked in the API tests.
+AI-generated results are validated before they are saved. If the AI service is unavailable or returns invalid structured data, the API responds with an error instead of saving an incomplete result.
 
 ## Requirements
 
-- Node.js 20 or newer
+- Node.js 22 or newer, or Node.js 20 LTS (supported releases of the SQLite dependency)
 - npm
 - A Groq API key for AI-powered features
-- Git, if cloning the project from GitHub
+- Git, if cloning the project
 
-## Get the Project from GitHub
+## Install and Run
 
-Clone the repository, then change into the project folder:
+Clone the repository and enter the project folder:
 
 ```sh
 git clone https://github.com/faisalsangal1/STUDY-COACH.git
 cd STUDY-COACH
 ```
 
-You can also use GitHub's **Code → Download ZIP** option and extract the archive. If you download the ZIP, open a terminal in the extracted `STUDY-COACH` folder before continuing.
+Install dependencies from the lockfile:
 
-## Install and Run
+```sh
+npm ci
+```
 
-1. Install the project's dependencies:
+On Windows, this project uses a prebuilt `better-sqlite3` binary, so a C++ compiler or Visual Studio Build Tools should not normally be needed. If installation reports a `node-gyp`/Visual Studio error, check that you are using a supported Node.js version above and retry `npm ci`.
 
-   ```sh
-   npm install
-   ```
+Optionally create a `.env` file in the project root to configure a server-side API key, port, or database path:
 
-2. To use AI features, either enter your Groq API key in the app's **API key** page after it starts, or create a `.env` file in the project root:
+```dotenv
+GROQ_API_KEY=your_groq_api_key
+PORT=3000
+DATABASE_PATH=data/study-coach.sqlite
+```
 
-   ```dotenv
-   GROQ_API_KEY=your_groq_api_key
-   PORT=3000
-   ```
+`GROQ_API_KEY` is optional if you will enter a key in the app. `PORT` defaults to `3000`. `DATABASE_PATH` defaults to `data/study-coach.sqlite` and may be a relative path (from the project folder) or an absolute path. Keep `.env` private; it is excluded from Git.
 
-   Get an API key from Groq and replace `your_groq_api_key` with that key. Keep `.env` private: it is excluded from Git, and you should never commit or share your real API key. `PORT` is optional and defaults to `3000`. You can also optionally set `DATABASE_PATH` to choose a database file path (relative to the project folder or an absolute path); otherwise the app uses `data/study-coach.sqlite`.
+Start the app:
 
-   Alternatively, start the app and open **API key** in the sidebar. A key entered there is saved in that browser's local storage, not in the source code or SQLite database. The browser sends it to the app server only for AI requests; the server forwards it to Groq. Anyone with access to that browser profile may be able to use the saved key, so remove it on shared devices. If you deploy the app, use HTTPS and only enter a key on a server you trust. Groq usage may be subject to its own pricing and limits.
+```sh
+npm run dev
+```
 
-3. Start the app in development mode:
+Or start without the development file watcher:
 
-   ```sh
-   npm run dev
-   ```
+```sh
+npm start
+```
 
-   Or start it without the development file watcher:
+Open the URL printed in the terminal, normally <http://127.0.0.1:3000>. If that port is busy, the server tries following ports and prints the one it uses.
 
-   ```sh
-   npm start
-   ```
+## HTTP API
 
-4. Open the local URL printed in the terminal, normally <http://127.0.0.1:3000>. If that port is busy, the server tries the following ports and prints the URL it uses.
+All routes below are prefixed with `/api`. The API accepts and returns JSON for requests and responses with bodies. Send `Content-Type: application/json` for JSON request bodies. The server limits JSON request bodies to 1 MB. Path IDs are positive integers.
 
-The app can start without `GROQ_API_KEY`; add a key in the sidebar to enable AI-powered generation and short-answer evaluation. To check a server-configured AI connection, open `http://127.0.0.1:3000/api/test-ai` using the actual port printed by the server. Use **Test connection** on the API key page to test a browser-saved key. The basic health endpoint is `/api/health`.
+### Health and AI connection
 
-## Run Tests
+| Method and route | Description |
+| --- | --- |
+| `GET /api/health` | Returns `{ "ok": true }` when the app server is running. Does not check Groq. |
+| `GET /api/test-ai` | Sends a small test request to Groq and returns its response. Accepts `X-Groq-API-Key`; otherwise uses `GROQ_API_KEY`. |
+
+### Subjects and syllabus topics
+
+| Method and route | Description |
+| --- | --- |
+| `GET /api/subjects` | Lists subjects with their topics and topic performance. |
+| `POST /api/subjects` | Creates a subject. Body: `{ "name": "Physics" }`. |
+| `PUT /api/subjects/:id` | Renames a subject. Body: `{ "name": "Physics" }`. |
+| `DELETE /api/subjects/:id` | Deletes a subject. |
+| `GET /api/subjects/:subjectId/topics` | Lists a subject's topics. |
+| `POST /api/topics` | Creates a topic. Body: `{ "subjectId": 1, "name": "Motion" }`. |
+| `PUT /api/topics/:id` | Renames a topic. Body: `{ "name": "Motion" }`. |
+| `PATCH /api/topics/:id` | Updates status to `not_started`, `in_progress`, or `completed`. |
+| `DELETE /api/topics/:id` | Deletes a topic. |
+
+### Study material, notes, and flashcards
+
+| Method and route | Description |
+| --- | --- |
+| `GET /api/materials` | Lists saved source materials. |
+| `POST /api/notes/generate` | Generates and saves notes and their source material. Body: `{ "title": "Motion", "material": "Study text...", "topicId": 1 }`; `title` and `topicId` are optional. |
+| `GET /api/notes` | Lists saved notes. |
+| `GET /api/notes/:id` | Gets a note. |
+| `DELETE /api/notes/:id` | Deletes a note and its associated study material. |
+| `POST /api/flashcards/generate` | Generates and saves flashcards from a note or material. Body: `{ "noteId": 1, "count": 10 }` or `{ "materialId": 1, "count": 10 }`; count defaults to 10 and must be 2–30. |
+| `GET /api/flashcards` | Lists saved flashcard sets. |
+| `GET /api/flashcards/:id` | Gets a flashcard set. |
+| `DELETE /api/flashcards/:id` | Deletes a flashcard set. |
+
+### Practice questions and grading
+
+| Method and route | Description |
+| --- | --- |
+| `POST /api/questions/generate` | Generates and saves questions from a note or material. Body: `{ "noteId": 1, "count": 8 }` or `{ "materialId": 1, "count": 8 }`; count defaults to 8 and must be 1–20. |
+| `GET /api/materials/:materialId/questions` | Lists practice questions for a material, without correct answers or explanations. |
+| `POST /api/questions/:id/answer` | Grades and records one answer. Body: `{ "answer": "..." }`. |
+| `POST /api/questions/submit` | Grades and records 1–20 answers together. Body: `{ "answers": [{ "questionId": 1, "answer": "..." }] }`. |
+
+Multiple-choice answers are graded by the app. Short-answer grading uses Groq. Incorrect answers may be recorded in the mistake bank.
+
+### Exams
+
+| Method and route | Description |
+| --- | --- |
+| `POST /api/exams/generate` | Generates and saves an exam. Provide saved `materialId`, `topicIds`, or `topicNames`; optional fields include `subjectId`, `title`, `difficulty`, `count` (1–25, default 10), and `durationMinutes` (5–240, default 30). |
+| `GET /api/exams` | Lists saved exams. |
+| `GET /api/exams/:id` | Gets an exam and its questions. |
+| `POST /api/exams/:id/submit` | Submits answers. Body: `{ "answers": [{ "questionId": 1, "answer": "..." }] }`. Returns the score and topic results. |
+| `DELETE /api/exams/:id` | Deletes an exam. |
+
+Exam multiple-choice answers are graded locally; short answers are evaluated by Groq. An exam can only be submitted once.
+
+### Dashboard, revision, mistakes, and workspace
+
+| Method and route | Description |
+| --- | --- |
+| `GET /api/dashboard` | Returns workspace counts, overall accuracy, and topic performance. |
+| `GET /api/revision` | Lists revision tasks. |
+| `POST /api/revision/generate` | Creates revision tasks from saved `noteIds`, `examIds`, and/or `topicNames`; without those selections, prioritizes topics using recorded performance. |
+| `PATCH /api/revision/:id/complete` | Marks a task complete. |
+| `DELETE /api/revision/:id` | Deletes a revision task. |
+| `GET /api/mistakes` | Lists mistakes. Optional query filters: `topicId`, `subjectId`, and `resolved=true|false`. |
+| `PATCH /api/mistakes/:id` | Marks a mistake resolved. Body: `{ "resolved": true }`. |
+| `DELETE /api/mistakes/:id` | Deletes a mistake. |
+| `DELETE /api/workspace` | Permanently clears the local workspace data. |
+
+Revision planning uses app data and does not require an AI API key.
+
+### Calling an AI-backed endpoint
+
+The browser automatically adds the saved browser key to supported AI requests. A direct API client can pass the key as a raw value in `X-Groq-API-Key`:
+
+```sh
+curl -X POST http://127.0.0.1:3000/api/notes/generate \
+  -H "Content-Type: application/json" \
+  -H "X-Groq-API-Key: your_groq_api_key" \
+  -d "{\"title\":\"Motion\",\"material\":\"Velocity is the rate of change of displacement.\"}"
+```
+
+AI-backed routes are `POST /api/notes/generate`, `POST /api/flashcards/generate`, `POST /api/questions/generate`, `POST /api/questions/:id/answer`, `POST /api/questions/submit`, `POST /api/exams/generate`, `POST /api/exams/:id/submit`, and `GET /api/test-ai`. If neither the request header nor server environment contains a key, those AI operations cannot complete. Common API errors include `400` for invalid input, `404` for missing records, `409` for conflicting operations, `413` for an oversized JSON request, `502` for invalid AI output, and `503` when an AI-backed operation cannot reach the provider. The connection-test route returns `500` when its check fails; unexpected API errors return `500`.
+
+## Tests
+
+Run the test suite:
 
 ```sh
 npm test
 ```
 
-The tests use mocked Groq responses; they do not require a real API key or make paid model requests.
+Tests use mocked Groq responses. They do not require a real API key or make paid model requests.
 
-## Data and Hosting Notes
+## Data, Privacy, and Hosting
 
-GitHub stores the project's source code; it does not run this app. The project is an Express backend with a local SQLite database, so it cannot be hosted as a static GitHub Pages site. The local database and `.env` are excluded from Git. After cloning, the app creates a fresh database on first run; existing study data is not included in the repository.
+The local SQLite database and `.env` are excluded from Git. A fresh database is created on first run; existing study data and saved browser API keys are not included in the repository. The **Reset data** control and `DELETE /api/workspace` permanently clear saved workspace data.
 
-This app is intended for local use. Do not expose it publicly with personal study data: it currently has no accounts or access controls. Public hosting would require a suitable server host and additional work to secure access and provide persistent database storage.
-
-The app's **Reset data** control deletes the saved local workspace, so use it with care.
+GitHub stores this project's source code; it does not run the app. Oryn AI is an Express backend with a local SQLite database and is not a static GitHub Pages app. It is intended for local use: there is no account system or access control, and the normal server binds to loopback. Do not expose it publicly with personal study data or API keys without first adding appropriate authentication, access controls, HTTPS, and persistent database storage.
