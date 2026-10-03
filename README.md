@@ -1,81 +1,105 @@
 # Oryn AI Study Coach
 
-Oryn AI is a personal study workspace that turns a student's own notes and syllabus topics into structured study tools, then keeps practice results and revision work together in one place.
+Oryn AI is a personal study workspace that turns study material and syllabus topics into structured learning tools. It keeps practice results, mistakes, and revision work together so students can see what to study next.
 
-## What It Does
+## Core Features
 
-- Organizes subjects and syllabus topics and tracks topic completion and practice accuracy.
-- Generates structured revision notes, flashcards, practice questions, and timed exams from supplied study material or selected topics.
-- Grades multiple-choice answers directly and uses AI to evaluate short answers with feedback.
-- Records attempts and unresolved mistakes, shows performance on a dashboard, and builds revision plans from saved materials or observed performance.
+- Organize subjects and syllabus topics, and track topic completion and practice accuracy.
+- Generate revision notes, flashcards, practice questions, and timed exams from pasted study material, saved materials, or selected topics.
+- Practice questions and exams, get feedback, and review saved attempts and unresolved mistakes.
+- Grade multiple-choice answers directly in the app and use AI to assess short answers.
+- View progress on a dashboard and create revision plans based on saved materials and performance.
+- Paste class notes or passages into the study tools. The revision planner also accepts syllabus files in text or Markdown format.
+
+## How the App Works
+
+The browser interface is built with HTML, CSS, and JavaScript and is served by the Node.js/Express server. The browser sends requests to the server's JSON API. The server handles study workflows, calls the AI service for supported tasks, and saves subjects, study materials, generated content, attempts, and revision data to a local SQLite database.
+
+By default, the database is created at `data/study-coach.sqlite` on the machine running the app. It is not a shared online database. This is a local, single-workspace app: it has no account system, and anyone who can access a running instance can use that workspace.
 
 ## How AI Is Used
 
-The server sends focused prompts to Groq's OpenAI-compatible chat-completions API, using the `openai/gpt-oss-120b` model. AI is used for the study tasks above, not as a general-purpose chat interface. Generated content is requested in structured JSON, checked by the API, and saved to the local workspace. Short-answer grading also uses AI; multiple-choice grading and performance-based revision prioritization are handled by the application.
+For AI-powered study tasks, the server sends focused prompts to Groq's OpenAI-compatible chat-completions API using the `openai/gpt-oss-120b` model. The API key stays on the server and is not sent to the browser.
 
-Unlike a generic chatbot, Oryn AI organizes learning around source material, syllabus topics, saved notes, question attempts, and recurring mistakes. Its tools form a study loop: prepare material, practice, review feedback, and plan what to revisit.
+AI helps generate structured revision notes, flashcards, practice questions, and exams from the material or topics provided. The app requests structured JSON, validates the response, and saves valid results to the local workspace. AI also evaluates short answers and provides feedback. Multiple-choice grading and performance-based revision prioritization are handled by the app itself.
+
+Oryn AI is designed around a study loop—prepare material, practice, review feedback and mistakes, then plan what to revisit—not as a general-purpose chatbot.
 
 ## In Progress
 
-A conversational chatbot and a curriculum-specific AKUEB experience are currently in development. For now, only their front-end previews are available in the app: the assistant preview does not provide chat responses, and AKUEB mode does not yet provide live syllabus-aligned study tools. The study generation and grading features described above are available separately.
+A conversational chatbot and a curriculum-specific AKUEB experience are in development. Their current front-end previews do not provide chat responses or live syllabus-aligned AKUEB study tools. The study generation and grading features described above are available separately.
 
 ## Technology
 
-- **Frontend:** Vanilla HTML, CSS, and JavaScript; served by the app server.
+- **Frontend:** Vanilla HTML, CSS, and JavaScript.
 - **Backend:** Node.js and Express, with a JSON REST API.
-- **Data:** SQLite via `better-sqlite3`. The database is created automatically at `data/study-coach.sqlite` by default and stays on the machine running the server.
-- **AI:** Groq API, called server-side. The API key is not sent to the browser.
+- **Data:** SQLite via `better-sqlite3`.
+- **AI:** Groq API, called server-side.
 - **Tests:** Node's built-in test runner; AI requests are mocked in the API tests.
-
-This is a local, single-workspace app: it has no account system or remote application database. Anyone who can access the running app can use that workspace, so do not expose it publicly with personal study data.
 
 ## Requirements
 
 - Node.js 20 or newer
 - npm
 - A Groq API key for AI-powered features
+- Git, if cloning the project from GitHub
 
-## Setup and Run
+## Get the Project from GitHub
 
-1. Open a terminal in the project folder and install dependencies:
+Clone the repository, then change into the project folder:
+
+```sh
+git clone https://github.com/faisalsangal1/STUDY-COACH.git
+cd STUDY-COACH
+```
+
+You can also use GitHub's **Code → Download ZIP** option and extract the archive. If you download the ZIP, open a terminal in the extracted `STUDY-COACH` folder before continuing.
+
+## Install and Run
+
+1. Install the project's dependencies:
 
    ```sh
    npm install
    ```
 
-2. Create a `.env` file in the project root:
+2. Create a file named `.env` in the project root and add your own Groq API key:
 
    ```dotenv
    GROQ_API_KEY=your_groq_api_key
    PORT=3000
-   # Optional: database file path, relative to the project folder (or an absolute path)
-   # DATABASE_PATH=data/study-coach.sqlite
    ```
 
-   Keep `.env` private. It is excluded from version control. `PORT` and `DATABASE_PATH` are optional; the defaults are port `3000` and `data/study-coach.sqlite`.
+   Get an API key from Groq and replace `your_groq_api_key` with that key. Keep `.env` private: it is excluded from Git, and you should never commit or share your real API key. `PORT` is optional and defaults to `3000`. You can also optionally set `DATABASE_PATH` to choose a database file path (relative to the project folder or an absolute path); otherwise the app uses `data/study-coach.sqlite`.
 
-3. Start the app:
+3. Start the app in development mode:
 
    ```sh
    npm run dev
    ```
 
-   For a regular start without the development file watcher, use `npm start`. Open the URL printed by the server, normally <http://127.0.0.1:3000>. If that port is occupied, the server tries subsequent ports and prints the chosen URL.
+   Or start it without the development file watcher:
 
-4. To check the AI connection, visit `http://127.0.0.1:3000/api/test-ai` using the actual port printed by the server. The basic health endpoint is `/api/health`.
+   ```sh
+   npm start
+   ```
 
-Without `GROQ_API_KEY`, the app can start, but AI-powered generation and short-answer evaluation will not work.
+4. Open the local URL printed in the terminal, normally <http://127.0.0.1:3000>. If that port is busy, the server tries the following ports and prints the URL it uses.
 
-## Tests
+The app can start without `GROQ_API_KEY`, but AI-powered generation and short-answer evaluation will not work. To check the AI connection, open `http://127.0.0.1:3000/api/test-ai` using the actual port printed by the server. The basic health endpoint is `/api/health`.
 
-Run the API tests with:
+## Run Tests
 
 ```sh
 npm test
 ```
 
-The tests use a mocked Groq response and do not require a real API key or make paid model requests.
+The tests use mocked Groq responses; they do not require a real API key or make paid model requests.
 
-## Local Data
+## Data and Hosting Notes
 
-Study data is stored in the SQLite file at `DATABASE_PATH` (or the default under `data/`). The database is created on first run. The app's **Reset data** control deletes the saved workspace, so use it with care. The database and `.env` are ignored by Git; send the source project and configure a fresh API key on the machine where it will run.
+GitHub stores the project's source code; it does not run this app. The project is an Express backend with a local SQLite database, so it cannot be hosted as a static GitHub Pages site. The local database and `.env` are excluded from Git. After cloning, the app creates a fresh database on first run; existing study data is not included in the repository.
+
+This app is intended for local use. Do not expose it publicly with personal study data: it currently has no accounts or access controls. Public hosting would require a suitable server host and additional work to secure access and provide persistent database storage.
+
+The app's **Reset data** control deletes the saved local workspace, so use it with care.
