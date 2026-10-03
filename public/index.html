@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI-powered learning that helps you study, practice, understand your mistakes, and improve.">
+  <meta name="theme-color" content="#0b101b">
+  <title>Oryn AI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#dashboard" aria-label="Oryn AI dashboard">
+        <img class="brand-mark" src="logo/logo.png" alt="">
+        <span class="brand-wordmark">Oryn <span>AI</span></span>
+      </a>
+      <div class="sidebar-label">WORKSPACE</div>
+      <nav class="primary-nav" aria-label="Main navigation">
+        <button class="nav-item active" type="button" data-view="dashboard"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg></span>Dashboard</button>
+        <button class="nav-item" type="button" data-view="syllabus"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4.5h14v15H5zM8.5 8h7M8.5 12h7M8.5 16h4"/></svg></span>Syllabus</button>
+        <button class="nav-item" type="button" data-view="notes"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3.5h8l4 4v13H6zM14 3.5v4h4M9 12h6M9 16h6"/></svg></span>Notes</button>
+        <button class="nav-item" type="button" data-view="flashcards"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="13" height="15" rx="2"/><path d="M8 3.5h10a2 2 0 0 1 2 2v12M8.5 10h6M8.5 14h4"/></svg></span>Flashcards</button>
+        <button class="nav-item" type="button" data-view="practice"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m8 12 2.5 2.5L16.5 8M20 12a8 8 0 1 1-4-6.93"/></svg></span>Practice</button>
+        <div class="nav-section-label">PERFORMANCE</div>
+        <button class="nav-item" type="button" data-view="mistakes"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 8v5M12 16.5h.01M10.3 4.8 3.8 16a2 2 0 0 0 1.7 3h13a2 2 0 0 0 1.7-3l-6.5-11.2a2 2 0 0 0-3.4 0Z"/></svg></span>Mistake bank</button>
+        <button class="nav-item" type="button" data-view="exams"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/></svg></span>Exams</button>
+        <div class="nav-section-label">PLANNING</div>
+        <button class="nav-item" type="button" data-view="revision"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 7v5h-5M4.5 10a7.5 7.5 0 0 1 13-3L20 12M4 17v-5h5m10.5 2a7.5 7.5 0 0 1-13 3L4 12"/></svg></span>Revision planner</button>
+      </nav>
+      <nav id="akueb-nav" class="akueb-nav" aria-label="AKUEB preview navigation" hidden>
+        <div class="sidebar-label">AKUEB PREVIEW</div>
+        <button class="nav-item active" type="button" data-akueb-scroll="akueb-preview-top"><span class="nav-symbol" aria-hidden="true">⌂</span>Overview</button>
+        <button class="nav-item" type="button" data-akueb-scroll="akueb-feature-previews"><span class="nav-symbol" aria-hidden="true">◎</span>Study by SLO</button>
+        <button class="nav-item" type="button" data-akueb-scroll="akueb-subject-preview"><span class="nav-symbol" aria-hidden="true">▤</span>Full syllabus</button>
+        <button class="nav-item" type="button" data-akueb-scroll="akueb-mock-preview"><span class="nav-symbol" aria-hidden="true">◷</span>Mock papers</button>
+        <button class="nav-item" type="button" data-akueb-scroll="akueb-feature-previews"><span class="nav-symbol" aria-hidden="true">✦</span>Resources & AI</button>
+      </nav>
+      <div class="sidebar-bottom"><span class="connection-dot" aria-hidden="true"></span><span>Intelligent learning space</span></div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <div class="topbar-start">
+          <div class="navigation-controls" aria-label="Page navigation">
+            <button id="back-navigation" class="nav-history-button" type="button" aria-label="Go back" title="Go back" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18 9 12l6-6"/></svg></button>
+            <button id="home-navigation" class="nav-history-button" type="button" aria-label="Go to dashboard" title="Go to dashboard"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7M5.5 9v11h13V9M9.5 20v-7h5v7"/></svg></button>
+          </div>
+          <div class="breadcrumb"><span id="breadcrumb-brand">ORYN AI</span><span class="breadcrumb-divider">/</span><span id="current-section">OVERVIEW</span></div>
+        </div>
+        <div class="topbar-right"><span class="today-label" id="today-label"></span><button id="akueb-mode-toggle" class="button mode-switch" type="button" aria-pressed="false"><span class="mode-switch-dot" aria-hidden="true"></span><span id="akueb-mode-label">AKUEB Mode</span></button><button id="reset-workspace" class="button button-danger button-small" type="button" title="Delete all saved data" aria-label="Reset workspace and delete all saved data"><span aria-hidden="true">↺</span><span>Reset data</span></button><span class="avatar" aria-label="Local workspace">S</span></div>
+      </header>
+      <div class="page-content">
+        <section class="view active" id="dashboard-view" aria-labelledby="dashboard-title">
+          <div class="dashboard-hero">
+            <section class="dashboard-welcome">
+              <p class="eyebrow">YOUR LEARNING, IN FOCUS</p>
+              <h1 id="dashboard-title">Welcome back</h1>
+              <p class="dashboard-welcome-copy">A clear view of what you have studied and what is next.</p>
+              <div class="dashboard-welcome-footer">
+                <button class="button button-primary" type="button" data-go="notes"><span aria-hidden="true">+</span> New study material</button>
+                <span class="dashboard-session-label"><span aria-hidden="true"></span> Local workspace</span>
+              </div>
+            </section>
+            <section id="dashboard-progress" class="dashboard-progress" aria-live="polite" aria-label="Syllabus progress"></section>
+          </div>
+
+          <section class="dashboard-tools" aria-label="Study tools">
+            <div class="dashboard-tools-heading"><span>QUICK ACCESS</span><span>Choose a way to study</span></div>
+            <div class="feature-grid">
+              <button class="feature-card" type="button" data-go="notes"><span class="feature-icon feature-icon-blue" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3.5h8l4 4v13H6zM14 3.5v4h4M9 12h6M9 16h6"/></svg></span><span class="feature-copy"><strong>Notes generator</strong><span>Turn your material into structured notes.</span></span><span class="feature-arrow" aria-hidden="true">↗</span></button>
+              <button class="feature-card" type="button" data-go="flashcards"><span class="feature-icon feature-icon-violet" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="13" height="15" rx="2"/><path d="M8 3.5h10a2 2 0 0 1 2 2v12M8.5 10h6M8.5 14h4"/></svg></span><span class="feature-copy"><strong>Flashcards</strong><span>Build recall from your saved notes.</span></span><span class="feature-arrow" aria-hidden="true">↗</span></button>
+              <button class="feature-card" type="button" data-go="practice"><span class="feature-icon feature-icon-teal" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m8 12 2.5 2.5L16.5 8M20 12a8 8 0 1 1-4-6.93"/></svg></span><span class="feature-copy"><strong>Practice questions</strong><span>Test your understanding as you go.</span></span><span class="feature-arrow" aria-hidden="true">↗</span></button>
+              <button class="feature-card" type="button" data-go="exams"><span class="feature-icon feature-icon-amber" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/></svg></span><span class="feature-copy"><strong>Exam simulator</strong><span>Practice under timed exam conditions.</span></span><span class="feature-arrow" aria-hidden="true">↗</span></button>
+            </div>
+          </section>
+
+          <div class="dashboard-main-grid">
+            <div class="dashboard-primary-column">
+              <section class="dashboard-topic-panel">
+                <div class="dashboard-panel-heading"><div><p class="eyebrow">SYLLABUS SNAPSHOT</p><h2>Subject overview</h2></div><button class="text-button" type="button" data-go="syllabus">Open syllabus <span aria-hidden="true">→</span></button></div>
+                <div id="dashboard-topics" class="topic-progress-list"></div>
+              </section>
+              <aside class="focus-panel"><div><p class="eyebrow">STUDY ACTIVITY</p><h2>Keep building evidence</h2><p>Your dashboard reflects saved practice, mistakes, and study sessions. Topic accuracy appears after you answer questions.</p></div><button class="button button-dark" type="button" data-go="practice">Continue with practice <span aria-hidden="true">→</span></button></aside>
+            </div>
+            <section class="dashboard-statistics" aria-label="Study statistics" aria-live="polite">
+              <div class="dashboard-panel-heading"><div><p class="eyebrow">YOUR WORKSPACE</p><h2>Statistics</h2></div><span class="dashboard-stat-count">8 metrics</span></div>
+              <div class="metric-grid" id="dashboard-metrics"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="syllabus-view" aria-labelledby="syllabus-title">
+          <div class="page-heading"><div><p class="eyebrow">ORGANIZE YOUR LEARNING</p><h1 id="syllabus-title">Syllabus</h1><p class="subheading">Keep subjects and topics in one place.</p></div></div>
+          <div class="form-row section-block syllabus-create-row">
+            <form id="subject-form" class="inline-form"><label for="subject-name">New subject</label><div class="input-action"><input id="subject-name" name="name" maxlength="120" placeholder="e.g. Biology" required><button class="button button-primary" type="submit">Add subject</button></div></form>
+            <form id="topic-form" class="inline-form"><label for="topic-name">New topic</label><div class="input-action"><select id="topic-subject" name="subjectId" required><option value="">Choose subject</option></select><input id="topic-name" name="name" maxlength="160" placeholder="e.g. Cell structure" required><button class="button button-secondary" type="submit">Add topic</button></div></form>
+          </div>
+          <div id="syllabus-list" class="subject-list" aria-live="polite"></div>
+        </section>
+
+        <section class="view" id="notes-view" aria-labelledby="notes-title">
+          <div class="page-heading"><div><p class="eyebrow">TURN MATERIAL INTO CLARITY</p><h1 id="notes-title">Notes</h1><p class="subheading">Generate structured notes from a topic or your own material.</p></div></div>
+          <div class="notes-layout">
+            <form id="notes-form" class="tool-form section-block">
+              <div class="form-heading"><span class="step-number">01</span><div><h2>Study material</h2><p>Use a syllabus topic or work independently.</p></div></div>
+              <label for="notes-topic">Link to a topic <span>Optional</span></label><select id="notes-topic"><option value="">No topic selected</option></select>
+              <label for="notes-heading">Title <span>Optional</span></label><input id="notes-heading" maxlength="160" placeholder="e.g. Photosynthesis">
+              <label for="notes-material">Paste your material or enter a topic to explain</label><textarea id="notes-material" rows="9" maxlength="60000" placeholder="Paste class notes, a passage, or a topic name..." required></textarea>
+              <div class="form-footer"><span class="quiet-note">Your material is saved with the notes.</span><button class="button button-primary" type="submit">Generate notes <span aria-hidden="true">→</span></button></div>
+            </form>
+            <section class="notes-results" aria-live="polite"><div class="section-heading"><div><p class="eyebrow">YOUR LIBRARY</p><h2>Saved notes</h2></div></div><div id="notes-list" class="saved-list"></div><article id="note-detail" class="note-detail hidden"></article></section>
+          </div>
+        </section>
+
+        <section class="view" id="flashcards-view" aria-labelledby="flashcards-title">
+          <div class="page-heading"><div><p class="eyebrow">RECALL, NOT JUST REVIEW</p><h1 id="flashcards-title">Flashcards</h1><p class="subheading">Practice active recall with cards generated from saved material.</p></div></div>
+          <div class="flashcards-layout">
+            <form id="flashcard-form" class="tool-form section-block flashcard-create-form"><div class="form-heading"><span class="step-number">01</span><div><h2>Create a set</h2><p>Choose saved notes or source material.</p></div></div><label for="flashcard-source">Source</label><select id="flashcard-source" required><option value="">Choose notes</option></select><label for="flashcard-count">Cards</label><input id="flashcard-count" type="number" min="2" max="30" value="10" required><button class="button button-primary full-width" type="submit">Generate flashcards <span aria-hidden="true">→</span></button></form>
+            <section class="practice-stage flashcard-stage" id="flashcard-stage"><div class="empty-state"><span class="empty-mark">✳</span><h2>Pick a set to begin</h2><p>Your saved flashcard sets will appear here.</p></div></section>
+          </div>
+          <section class="section-block library-section"><div class="section-heading"><div><p class="eyebrow">SAVED SETS</p><h2>Flashcard library</h2></div></div><div id="flashcard-library" class="saved-list"></div></section>
+        </section>
+
+        <section class="view" id="practice-view" aria-labelledby="practice-title">
+          <div class="page-heading"><div><p class="eyebrow">RETRIEVE, APPLY, IMPROVE</p><h1 id="practice-title">Practice</h1><p class="subheading">Generate questions from any saved notes or study material.</p></div><button class="button button-secondary" type="button" data-go="mistakes">Review your mistakes <span aria-hidden="true">→</span></button></div>
+          <div class="practice-layout">
+            <form id="practice-form" class="tool-form section-block"><div class="form-heading"><span class="step-number">01</span><div><h2>Build a question set</h2><p>Questions are saved for later practice.</p></div></div><label for="practice-source">Source</label><select id="practice-source" required><option value="">Choose notes</option></select><label for="practice-count">Questions</label><input id="practice-count" type="number" min="1" max="20" value="8" required><button class="button button-primary full-width" type="submit">Generate questions <span aria-hidden="true">→</span></button></form>
+            <section class="practice-stage" id="question-stage"><div class="empty-state"><span class="empty-mark">?</span><h2>Ready when you are</h2><p>Choose study material to create a focused practice set.</p></div></section>
+          </div>
+        </section>
+
+        <section class="view" id="mistakes-view" aria-labelledby="mistakes-title">
+          <div class="page-heading"><div><p class="eyebrow">LEARN FROM THE HARD PARTS</p><h1 id="mistakes-title">Mistake bank</h1><p class="subheading">Incorrect answers from practice are collected here.</p></div></div>
+          <div class="filter-row"><label for="mistake-subject">Subject</label><select id="mistake-subject"><option value="">All subjects</option></select><label for="mistake-status">Status</label><select id="mistake-status"><option value="false">Unresolved</option><option value="true">Resolved</option><option value="">All</option></select></div>
+          <div id="mistake-list" class="mistake-list" aria-live="polite"></div>
+        </section>
+
+        <section class="view" id="exams-view" aria-labelledby="exams-title">
+          <div class="page-heading"><div><p class="eyebrow">PRACTICE UNDER EXAM CONDITIONS</p><h1 id="exams-title">Exam simulator</h1><p class="subheading">Build a timed exam from your syllabus or saved study material.</p></div></div>
+          <div class="exam-layout">
+            <form id="exam-form" class="tool-form section-block exam-create-form">
+              <div class="form-heading"><span class="step-number">01</span><div><h2>Set up an exam</h2><p>Choose one subject, its topics, or standalone notes.</p></div></div>
+              <label for="exam-subject">Subject <span>Optional with notes</span></label><select id="exam-subject"><option value="">Choose subject</option></select>
+              <label for="exam-topics">Topics <span>Separate multiple topics with commas</span></label><input id="exam-topics" type="text" maxlength="1000" placeholder="e.g. Motion, Forces, Work and energy" autocomplete="off">
+              <label for="exam-source">Saved notes <span>Optional with topics</span></label><select id="exam-source"><option value="">No notes selected</option></select>
+              <div class="form-inline-fields"><div><label for="exam-count">Questions</label><input id="exam-count" type="number" min="1" max="25" value="10" required></div><div><label for="exam-duration">Minutes</label><input id="exam-duration" type="number" min="5" max="240" value="30" required></div></div>
+              <label for="exam-difficulty">Difficulty</label><select id="exam-difficulty"><option value="mixed">Mixed</option><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option></select>
+              <button class="button button-primary full-width" type="submit">Generate timed exam <span aria-hidden="true">→</span></button>
+            </form>
+            <section id="exam-stage" class="practice-stage exam-stage hidden" aria-live="polite"></section>
+          </div>
+          <section class="section-block library-section"><div class="section-heading"><div><p class="eyebrow">SAVED ATTEMPTS</p><h2>Exam history</h2></div></div><div id="exam-library" class="saved-list"></div></section>
+        </section>
+
+        <section class="view" id="revision-view" aria-labelledby="revision-title">
+          <div class="page-heading"><div><p class="eyebrow">MAKE THE NEXT SESSION COUNT</p><h1 id="revision-title">Revision planner</h1><p class="subheading">Plans are prioritized from recorded practice accuracy and unresolved mistakes.</p></div><button id="generate-revision" class="button button-primary" type="button">Build a 7-day plan <span aria-hidden="true">→</span></button></div>
+          <section class="section-block revision-builder" aria-labelledby="revision-builder-title">
+            <div class="section-heading"><div><p class="eyebrow">CHOOSE YOUR SOURCES</p><h2 id="revision-builder-title">Build from your study materials</h2><p class="subheading">Select saved work, or add topics from a syllabus.</p></div></div>
+            <div class="revision-source-grid">
+              <fieldset class="revision-source-group"><legend>Saved notes <label class="select-all-option"><input id="revision-select-all-notes" type="checkbox"> Select all</label></legend><div id="revision-notes-list" class="revision-source-list"><p class="inline-empty">Loading saved notes...</p></div></fieldset>
+              <fieldset class="revision-source-group"><legend>Saved exams <label class="select-all-option"><input id="revision-select-all-exams" type="checkbox"> Select all</label></legend><div id="revision-exams-list" class="revision-source-list"><p class="inline-empty">Loading saved exams...</p></div></fieldset>
+            </div>
+            <div class="revision-topics-input">
+              <label for="revision-syllabus-file">Upload syllabus <span>Text or Markdown files</span></label>
+              <input id="revision-syllabus-file" type="file" accept=".txt,.md,text/plain,text/markdown">
+              <label for="revision-topic-list">Or list topics <span>One topic per line</span></label>
+              <textarea id="revision-topic-list" rows="4" maxlength="6000" placeholder="Forces and motion&#10;Cell structure&#10;Data structures"></textarea>
+            </div>
+          </section>
+          <div id="revision-list" class="revision-list" aria-live="polite"></div>
+        </section>
+      </div>
+      <section id="akueb-preview" class="akueb-preview" aria-labelledby="akueb-title" hidden>
+        <div id="akueb-preview-top" class="akueb-hero">
+          <div class="akueb-hero-copy">
+            <p class="eyebrow"><span class="preview-pulse"></span> AKUEB MODE <span class="preview-badge">PRODUCT PREVIEW</span></p>
+            <h1 id="akueb-title">Oryn AI for AKUEB</h1>
+            <p class="akueb-hero-subtitle">Built around the way AKUEB students actually study.</p>
+            <p class="akueb-hero-description">We're working on a specialized Oryn AI experience designed around the AKUEB curriculum. A future version could bring together the official syllabus, recommended resources, textbooks, past papers, and student-created study material, with the board's expectations in mind.</p>
+            <button class="button button-primary" type="button" data-akueb-scroll="akueb-feature-previews">Explore the preview <span aria-hidden="true">↓</span></button>
+          </div>
+          <div class="akueb-hero-mark" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="orbit-core"><span>O</span><i></i></div><span class="orbit-label orbit-label-one">SLO</span><span class="orbit-label orbit-label-two">STUDY</span><span class="orbit-label orbit-label-three">REVISE</span></div>
+        </div>
+
+        <section class="akueb-preview-dashboard" aria-labelledby="akueb-dashboard-title">
+          <div class="akueb-section-heading"><div><p class="eyebrow">YOUR FUTURE WORKSPACE</p><h2 id="akueb-dashboard-title">AKUEB preparation, in focus</h2></div><span class="preview-badge">PREVIEW ONLY</span></div>
+          <div class="akueb-stat-grid">
+            <article class="akueb-stat"><span class="akueb-stat-icon">◎</span><span><strong>SLO progress</strong><small>Planned for a future version</small></span><b>PREVIEW</b></article>
+            <article class="akueb-stat"><span class="akueb-stat-icon">↻</span><span><strong>Full syllabus revision</strong><small>Planned for a future version</small></span><b>PLANNED</b></article>
+            <article id="akueb-mock-preview" class="akueb-stat"><span class="akueb-stat-icon">◷</span><span><strong>Mock papers</strong><small>Past-paper-inspired practice</small></span><b>COMING SOON</b></article>
+          </div>
+          <section id="akueb-subject-preview" class="akueb-subject-panel">
+            <div class="akueb-section-heading"><div><p class="eyebrow">SYLLABUS-LED LEARNING</p><h2>Your subjects</h2></div><span class="preview-note">Illustrative preview · no student progress shown</span></div>
+            <div class="akueb-subject-list">
+              <div class="akueb-subject-row"><span class="subject-swatch swatch-blue"></span><strong>Physics</strong><span class="preview-track"><i></i></span><span class="coming-label">Coming soon</span></div>
+              <div class="akueb-subject-row"><span class="subject-swatch swatch-teal"></span><strong>Chemistry</strong><span class="preview-track"><i></i></span><span class="coming-label">Coming soon</span></div>
+              <div class="akueb-subject-row"><span class="subject-swatch swatch-gold"></span><strong>Mathematics</strong><span class="preview-track"><i></i></span><span class="coming-label">Coming soon</span></div>
+            </div>
+          </section>
+        </section>
+
+        <section id="akueb-feature-previews" class="akueb-feature-section" aria-labelledby="akueb-features-title">
+          <div class="akueb-section-heading"><div><p class="eyebrow">A MORE FOCUSED WAY TO PREPARE</p><h2 id="akueb-features-title">Designed for the AKUEB journey</h2></div></div>
+          <div class="akueb-feature-grid">
+            <article class="akueb-feature-card"><span class="akueb-feature-icon">◎</span><span class="preview-badge">COMING SOON</span><h3>Study by SLO</h3><p>Select a specific Student Learning Outcome and study what you need, with explanations, examples, and practice shaped around its objectives.</p></article>
+            <article class="akueb-feature-card"><span class="akueb-feature-icon">↻</span><span class="preview-badge">IN DEVELOPMENT</span><h3>AKUEB Revision</h3><p>Turn the complete AKUEB syllabus into a structured revision journey, helping you move through topics systematically before exams.</p></article>
+            <article class="akueb-feature-card"><span class="akueb-feature-icon">◷</span><span class="preview-badge">COMING SOON</span><h3>AKUEB Mock Papers</h3><p>Practice with future mock examinations inspired by the structure and expectations of AKUEB past papers.</p></article>
+            <article class="akueb-feature-card"><span class="akueb-feature-icon">▤</span><span class="preview-badge">PLANNED</span><h3>AKUEB Resource Library</h3><p>A planned resource layer for relevant syllabus material, recommended books, past papers, and student-created study resources.</p></article>
+            <article class="akueb-feature-card"><span class="akueb-feature-icon">✦</span><span class="preview-badge">IN DEVELOPMENT</span><h3>Personalized AKUEB AI</h3><p>A future AI experience designed to understand your progress and help you focus on the topics and SLOs that need attention.</p></article>
+          </div>
+          <p class="akueb-honesty-note"><span aria-hidden="true">✦</span> This is a product preview. These AKUEB features are not available yet.</p>
+        </section>
+      </section>
+    </main>
+  </div>
+  <dialog id="exam-submitted-dialog" class="exam-submitted-dialog" aria-labelledby="exam-submitted-title">
+    <div class="exam-dialog-content">
+      <p class="eyebrow">EXAM COMPLETE</p>
+      <h2 id="exam-submitted-title">Exam submitted</h2>
+      <p id="exam-submitted-score" class="exam-dialog-score"></p>
+      <section class="exam-revisit-section"><h3>Topics to revisit</h3><ul id="exam-revisit-topics"></ul></section>
+      <div class="exam-dialog-actions">
+        <button id="review-submitted-exam" class="button button-primary" type="button">Review exam <span aria-hidden="true">→</span></button>
+        <form method="dialog"><button class="button button-secondary" type="submit">Close</button></form>
+      </div>
+    </div>
+  </dialog>
+  <dialog id="assistant-dialog" class="assistant-dialog" aria-labelledby="assistant-title">
+    <div class="assistant-window">
+      <header class="assistant-header"><div class="assistant-brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3.5 14 9l5.5 2-5.5 2-2 5.5L10 13l-5.5-2L10 9z"/><path d="m19 15 .9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg></div><div><h2 id="assistant-title">Oryn AI Assistant</h2><span class="assistant-status"><i></i> Coming soon</span></div><button id="assistant-close" class="icon-button assistant-close" type="button" aria-label="Close assistant preview" title="Close">×</button></header>
+      <div class="assistant-context"><span class="assistant-context-mark">O</span><span>ORYN AI <small>STUDY COMPANION PREVIEW</small></span><span class="preview-badge">PREVIEW</span></div>
+      <section class="assistant-message"><div class="assistant-message-icon" aria-hidden="true">✦</div><div class="assistant-message-bubble"><p>Your personal AI study assistant is on the way.</p><p>We haven't been able to bring the full assistant online in this version. We're working toward a more personalized Oryn AI that can understand your learning journey, help you study, explain difficult concepts, and guide you based on your progress.</p><strong>More intelligent, personalized assistance is coming soon.</strong></div></section>
+      <div class="assistant-coming"><span aria-hidden="true">✧</span> We're building something better for you.</div>
+    </div>
+  </dialog>
+  <button id="assistant-launcher" class="assistant-launcher" type="button" aria-label="Open Oryn AI Assistant preview" aria-haspopup="dialog" aria-controls="assistant-dialog" title="Oryn AI Assistant · Coming soon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H7l-3.5 2v-6.5A7.5 7.5 0 1 1 20 11.5Z"/><path d="m12.5 6.5 1.1 2.4 2.4 1.1-2.4 1.1-1.1 2.4-1.1-2.4L9 10l2.4-1.1z"/></svg><span class="assistant-launcher-pulse"></span></button>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="script.js"></script>
+</body>
+</html>
